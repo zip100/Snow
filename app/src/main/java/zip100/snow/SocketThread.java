@@ -20,41 +20,41 @@ import java.net.UnknownHostException;
 
 public class SocketThread {
 
-    public static Handler socketHandler = null;
-    private static PrintWriter out;
+    public static PrintWriter out;
+    private static SocketThread instance;
+    private Handler handler = new Handler();
 
-    public static void startSocket(final String IpAddress, final Integer Port) {
+    public void start() {
         Log.d("Socket", "startSocket click");
         new Thread(new Runnable() {
             @Override
             public void run() {
 
                 Log.d("Socket", "startSocket run");
-
                 Looper.prepare();
-
-                socketHandler = new Handler() {
+                handler = new Handler(){
                     @Override
-                    public void handleMessage(Message msg) {//3、定义处理消息的方法
-                        Log.d("Test", "CustomThread Get Message");
-                        out.write(msg.getData().getString("message"));
+                    public void handleMessage(Message msg) {
+                        Log.d("Socket", "get message..");
+                        try {
+                            out.write("heheda");
+                            out.flush();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
                 };
 
                 try {
-                    Socket socket = new Socket(IpAddress, Port);
+                    Socket socket = new Socket("192.168.199.137", 81);
                     socket.setSoTimeout(13000);
                     // 填充信息
                     Log.d("Socket", "created..");
 
                     out = new PrintWriter(new BufferedWriter(
                             new OutputStreamWriter(socket.getOutputStream())), true);
-
-                    send("hellow");
-
                     while (true) {
                     }
-
                 } catch (UnknownHostException e1) {
                     e1.printStackTrace();
                 } catch (ConnectException e1) {
@@ -62,24 +62,21 @@ public class SocketThread {
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
+
+                Log.d("Socket", "End Socket");
             }
         }).start();
     }
 
-    public static void send(String content) {
 
-        if (socketHandler == null) {
-            Log.d("send", "no socketHandler");
-            return;
-        }
-
-        Message message = new Message();
-
-        Bundle bundle = new Bundle();
-        bundle.putString("message", content);
-
-        message.setData(bundle);
-
-        socketHandler.sendMessage(message);
+    public static void startSocket(String IpAddress, Integer Port) {
+        instance = new SocketThread();
+        instance.start();
     }
+
+    public static void send(String line){
+        instance.out.write(line);
+        instance.out.flush();
+    }
+
 }
