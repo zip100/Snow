@@ -1,5 +1,6 @@
 package zip100.snow;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     float y1 = 0;
     float y2 = 0;
 
+
+    Integer screenHeight, screenWidth;
 
     private final String imgUrl = "http://codelife.jios.org:807/?action=stream";
     private final String ipAddress = "172.19.21.128";
@@ -39,6 +42,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //SocketThread.startSocket(ipAddress, port);
 
         initImg(imgUrl);
+
+        WindowManager vm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        screenHeight = vm.getDefaultDisplay().getHeight();
+        screenWidth = vm.getDefaultDisplay().getWidth();
     }
 
     @Override
@@ -54,11 +61,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         if (view.getId() == R.id.left) {
-            Log.d("touch-left", String.valueOf(event.getX()) + "-" + String.valueOf(event.getY()));
+            Log.d("touch-left", screenWidth.toString() + "-" +String.valueOf(event.getY()));
         }
 
         if (view.getId() == R.id.right) {
-            Log.d("touch-right", String.valueOf(event.getX()) + "-" + String.valueOf(event.getY()));
+            Log.d("touch-right", screenWidth.toString() + "-" +String.valueOf(event.getY()));
         }
 
         //SocketThread.send(String.valueOf(event.getX()) + "-" +String.valueOf(event.getY()));
