@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
 
@@ -19,23 +21,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        findViewById(R.id.button_connect).setOnClickListener(this);
         findViewById(R.id.activify_main).setOnTouchListener(this);
+        SocketThread.startSocket("192.168.199.137", 81);
+
+
+        WebView web = (WebView)findViewById(R.id.web);
+        web.loadUrl("http://codelife.jios.org:807/?action=stream");
+        web.setWebViewClient(new WebViewClient());
     }
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.button_connect) {
-            Intent intent = new Intent();
-            intent.setClass(this, ConnectActivity.class);
-            startActivity(intent);
-        }
     }
 
     @Override
     public boolean onTouch(View var1, MotionEvent event) {
-
         SocketThread.send(String.valueOf(event.getX()) + "-" +String.valueOf(event.getY()));
 //
 //        if (event.getAction() == MotionEvent.ACTION_DOWN) {

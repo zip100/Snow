@@ -46,7 +46,7 @@ public class SocketThread {
                 };
 
                 try {
-                    Socket socket = new Socket("192.168.199.137", 81);
+                    Socket socket = new Socket("172.19.21.128", 81);
                     socket.setSoTimeout(13000);
                     // 填充信息
                     Log.d("Socket", "created..");
