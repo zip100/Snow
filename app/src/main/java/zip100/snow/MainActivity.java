@@ -61,11 +61,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         if (view.getId() == R.id.left) {
-            Log.d("touch-left", screenWidth.toString() + "-" +String.valueOf(event.getY()));
+
+            Float a = event.getY() / screenHeight;
+
+            Log.d("touch-left", a.toString());
         }
 
         if (view.getId() == R.id.right) {
-            Log.d("touch-right", screenWidth.toString() + "-" +String.valueOf(event.getY()));
+
+            Float a = event.getY() / screenHeight;
+
+            Log.d("touch-right", a.toString());
         }
 
         //SocketThread.send(String.valueOf(event.getX()) + "-" +String.valueOf(event.getY()));
