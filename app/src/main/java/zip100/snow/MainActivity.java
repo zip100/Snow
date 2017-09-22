@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -17,17 +19,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     float y2 = 0;
 
 
+    private final String imgUrl = "http://codelife.jios.org:807/?action=stream";
+    private final String ipAddress = "172.19.21.128";
+    private final Integer port = 81;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//去掉信息栏
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.activify_main).setOnTouchListener(this);
-        SocketThread.startSocket("192.168.199.137", 81);
 
 
-        WebView web = (WebView)findViewById(R.id.web);
-        web.loadUrl("http://codelife.jios.org:807/?action=stream");
-        web.setWebViewClient(new WebViewClient());
+        findViewById(R.id.web).setOnTouchListener(this);
+        findViewById(R.id.left).setOnTouchListener(this);
+        findViewById(R.id.right).setOnTouchListener(this);
+        //SocketThread.startSocket(ipAddress, port);
+
+        initImg(imgUrl);
     }
 
     @Override
@@ -35,8 +46,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public boolean onTouch(View var1, MotionEvent event) {
-        SocketThread.send(String.valueOf(event.getX()) + "-" +String.valueOf(event.getY()));
+    public boolean onTouch(View view, MotionEvent event) {
+        if (view.getId() == R.id.web) {
+            Log.d("touch-img", String.valueOf(event.getX()) + "-" + String.valueOf(event.getY()));
+            //SocketThread.send(String.valueOf(event.getX()) + "-" + String.valueOf(event.getY()));
+        }
+
+
+        if (view.getId() == R.id.left) {
+            Log.d("touch-left", String.valueOf(event.getX()) + "-" + String.valueOf(event.getY()));
+        }
+
+        if (view.getId() == R.id.right) {
+            Log.d("touch-right", String.valueOf(event.getX()) + "-" + String.valueOf(event.getY()));
+        }
+
+        //SocketThread.send(String.valueOf(event.getX()) + "-" +String.valueOf(event.getY()));
 //
 //        if (event.getAction() == MotionEvent.ACTION_DOWN) {
 //            x1 = event.getX();
@@ -61,5 +86,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //
 
         return true;
+    }
+
+    private void initImg(String url) {
+        WebView web = (WebView) findViewById(R.id.web);
+        web.loadUrl(url);
+        web.setWebViewClient(new WebViewClient());
     }
 }

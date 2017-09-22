@@ -20,61 +20,42 @@ import java.net.UnknownHostException;
 
 public class SocketThread {
 
-    public static PrintWriter out;
+    public static PrintWriter out = null;
     private static SocketThread instance;
-    private Handler handler = new Handler();
 
-    public void start() {
-        Log.d("Socket", "startSocket click");
+    public void start(final String IpAddress, final Integer Port) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-
-                Log.d("Socket", "startSocket run");
-                Looper.prepare();
-                handler = new Handler(){
-                    @Override
-                    public void handleMessage(Message msg) {
-                        Log.d("Socket", "get message..");
-                        try {
-                            out.write("heheda");
-                            out.flush();
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
-                    }
-                };
-
                 try {
-                    Socket socket = new Socket("172.19.21.128", 81);
+                    Log.d("SocketThread", "Created Socket");
+                    Socket socket = new Socket(IpAddress, Port);
                     socket.setSoTimeout(13000);
-                    // 填充信息
-                    Log.d("Socket", "created..");
 
                     out = new PrintWriter(new BufferedWriter(
                             new OutputStreamWriter(socket.getOutputStream())), true);
                     while (true) {
                     }
-                } catch (UnknownHostException e1) {
-                    e1.printStackTrace();
-                } catch (ConnectException e1) {
-                    e1.printStackTrace();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                } catch (Exception e) {
+                    Log.d("SocketThread", e.getMessage());
                 }
-
-                Log.d("Socket", "End Socket");
             }
         }).start();
     }
 
-
     public static void startSocket(String IpAddress, Integer Port) {
+        Log.d("SocketThread", "startSocket");
         instance = new SocketThread();
-        instance.start();
+        instance.start(IpAddress, Port);
     }
 
-    public static void send(String line){
+    public static void send(String line) {
+        Log.d("SocketThread", "send");
+
+        if (null == instance.out) {
+            return;
+        }
+
         instance.out.write(line);
         instance.out.flush();
     }
