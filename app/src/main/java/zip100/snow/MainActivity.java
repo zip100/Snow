@@ -19,6 +19,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     float y1 = 0;
     float y2 = 0;
 
+    public float left, right = 0;
+    public float offset = 20;
+
 
     Integer screenHeight, screenWidth;
 
@@ -54,41 +57,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onTouch(View view, MotionEvent event) {
-        if (view.getId() == R.id.web) {
-            Log.d("touch-img", String.valueOf(event.getX()) + "-" + String.valueOf(event.getY()));
-            //SocketThread.send(String.valueOf(event.getX()) + "-" + String.valueOf(event.getY()));
-        }
-
-
         if (view.getId() == R.id.left || view.getId() == R.id.right) {
             float rate = event.getY() / screenHeight * 255;
-            Integer a = (int)rate;
-            SocketThread.send(a.toString());
+            Integer a = (int) rate;
+
+            if ((view.getId() == R.id.left && (a - left > offset || a - left < -offset))) {
+                left = a;
+                SocketThread.send("Left:" + a.toString());
+            }
+
+            if (view.getId() == R.id.right && (a - right > offset || a - right < -offset)) {
+                right = a;
+                SocketThread.send("Right:" + a.toString());
+            }
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                SocketThread.send("Up...");
+            }
         }
 
-        //SocketThread.send(String.valueOf(event.getX()) + "-" +String.valueOf(event.getY()));
-//
-//        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//            x1 = event.getX();
-//            y1 = event.getY();
-//        }
-//
-//        if (event.getAction() == MotionEvent.ACTION_UP) {
-//            String line = "";
-//            x2 = event.getX();
-//            y2 = event.getY();
-//            if (y1 - y2 > 50) {
-//                line = "向上滑" + String.valueOf(y1 - y2);
-//            } else if (y2 - y1 > 50) {
-//                line = "向下滑" + String.valueOf(y2 - y1);
-//            } else if (x1 - x2 > 50) {
-//                line = "向左滑" + String.valueOf(x1 - x2);
-//            } else if (x2 - x1 > 50) {
-//                line = "向右滑" + String.valueOf(x2 - x1);
-//            }
-//            SocketThread.send(line);
-//        }
-//
+        if (view.getId() == R.id.web) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                x1 = event.getX();
+                y1 = event.getY();
+            }
+
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                String line = "";
+                x2 = event.getX();
+                y2 = event.getY();
+                if (y1 - y2 > 50) {
+                    line = "向上滑" + String.valueOf(y1 - y2);
+                } else if (y2 - y1 > 50) {
+                    line = "向下滑" + String.valueOf(y2 - y1);
+                } else if (x1 - x2 > 50) {
+                    line = "向左滑" + String.valueOf(x1 - x2);
+                } else if (x2 - x1 > 50) {
+                    line = "向右滑" + String.valueOf(x2 - x1);
+                }
+                SocketThread.send(line);
+            }
+        }
 
         return true;
     }
