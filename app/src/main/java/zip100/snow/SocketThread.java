@@ -7,6 +7,7 @@ import android.os.Message;
 import android.util.Log;
 
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -20,7 +21,7 @@ import java.net.UnknownHostException;
 
 public class SocketThread {
 
-    public static PrintWriter out = null;
+    public static DataOutputStream out = null;
     private static SocketThread instance;
 
     public void start(final String IpAddress, final Integer Port) {
@@ -32,9 +33,10 @@ public class SocketThread {
                     Socket socket = new Socket(IpAddress, Port);
                     socket.setSoTimeout(13000);
 
-                    out = new PrintWriter(new BufferedWriter(
-                            new OutputStreamWriter(socket.getOutputStream())), true);
+                    out = new DataOutputStream(socket.getOutputStream());
+
                     while (true) {
+                        Thread.sleep(1000);
                     }
                 } catch (Exception e) {
                     Log.d("SocketThread", e.getMessage());
@@ -49,15 +51,43 @@ public class SocketThread {
         instance.start(IpAddress, Port);
     }
 
-    public static void send(String line) {
+    public static void send(Integer left, Integer right, Integer x, Integer y, byte event) {
         Log.d("SocketThread", "send");
 
         if (null == instance.out) {
             return;
         }
+        try {
+            instance.out.write(pack(
+                    left.byteValue(),
+                    right.byteValue(),
+                    x,
+                    y,
+                    event)
+            );
+            instance.out.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-        instance.out.write(line);
-        instance.out.flush();
+    public static byte[] pack(byte left, byte right, int x, int y, byte event) {
+        return new byte[]{
+                left,
+                right,
+
+                (byte) ((x >> 24) & 0xFF),
+                (byte) ((x >> 16) & 0xFF),
+                (byte) ((x >> 8) & 0xFF),
+                (byte) (x & 0xFF),
+
+                (byte) ((y >> 24) & 0xFF),
+                (byte) ((y >> 16) & 0xFF),
+                (byte) ((y >> 8) & 0xFF),
+                (byte) (y & 0xFF),
+
+                event,
+        };
     }
 
 }

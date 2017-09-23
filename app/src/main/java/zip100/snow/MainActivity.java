@@ -20,7 +20,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     float y2 = 0;
 
     public float left, right = 0;
-    public float offset = 20;
+    public float offset = 30;
+    public Integer defaultValue = 0;
+
+    private final byte EVENT_LEFT_SPEED = 1;
+    private final byte EVENT_RIGHR_SPEED = 2;
+    private final byte EVENT_START_MOVE = 3;
+    private final byte EVENT_END_MOVE = 4;
+    private final byte EVENT_LEFT_SPEED_END = 5;
+    private final byte EVENT_RIGHR_SPEED_END = 6;
+    private final byte EVENT_END_MOVING = 7;
 
 
     Integer screenHeight, screenWidth;
@@ -63,38 +72,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             if ((view.getId() == R.id.left && (a - left > offset || a - left < -offset))) {
                 left = a;
-                SocketThread.send("Left:" + a.toString());
+                SocketThread.send(a, 0, 0, 0, EVENT_LEFT_SPEED);
             }
 
             if (view.getId() == R.id.right && (a - right > offset || a - right < -offset)) {
                 right = a;
-                SocketThread.send("Right:" + a.toString());
+                SocketThread.send(0, a, 0, 0, EVENT_RIGHR_SPEED);
             }
+
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                SocketThread.send("Up...");
+                if (view.getId() == R.id.left) {
+                    SocketThread.send(128, 0, 0, 0, EVENT_LEFT_SPEED_END);
+                }
+                if (view.getId() == R.id.right) {
+                    SocketThread.send(0, 128, 0, 0, EVENT_RIGHR_SPEED_END);
+                }
             }
+
         }
 
         if (view.getId() == R.id.web) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 x1 = event.getX();
                 y1 = event.getY();
+                SocketThread.send(0, 0, (int) x1, (int) y1, EVENT_START_MOVE);
             }
+
+
+            Float a = event.getX();
+            if (event.getAction() == MotionEvent.ACTION_MOVE && x1 > 0) {
+                Float mx = event.getX() - x1;
+                Float my = event.getY() - y1;
+                Log.d("move", mx.toString());
+                SocketThread.send(0, 0, (int) event.getX(), (int) event.getY(), EVENT_END_MOVING);
+            }
+
 
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 String line = "";
                 x2 = event.getX();
                 y2 = event.getY();
-                if (y1 - y2 > 50) {
-                    line = "向上滑" + String.valueOf(y1 - y2);
-                } else if (y2 - y1 > 50) {
-                    line = "向下滑" + String.valueOf(y2 - y1);
-                } else if (x1 - x2 > 50) {
-                    line = "向左滑" + String.valueOf(x1 - x2);
-                } else if (x2 - x1 > 50) {
-                    line = "向右滑" + String.valueOf(x2 - x1);
-                }
-                SocketThread.send(line);
+
+                SocketThread.send(0, 0, (int) x2, (int) y2, EVENT_END_MOVE);
+                x1 = y1 = 0;
+
             }
         }
 
