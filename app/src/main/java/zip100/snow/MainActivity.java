@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Integer screenHeight, screenWidth;
 
     private final String imgUrl = "http://codelife.jios.org:807/?action=stream";
-    private final String ipAddress = "172.19.21.128";
+    private final String ipAddress = "192.168.199.137";
     private final Integer port = 81;
 
     @Override
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.web).setOnTouchListener(this);
         findViewById(R.id.left).setOnTouchListener(this);
         findViewById(R.id.right).setOnTouchListener(this);
-        //SocketThread.startSocket(ipAddress, port);
+        SocketThread.startSocket(ipAddress, port);
 
         initImg(imgUrl);
 
@@ -60,18 +60,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
 
-        if (view.getId() == R.id.left) {
-
-            Float a = event.getY() / screenHeight;
-
-            Log.d("touch-left", a.toString());
-        }
-
-        if (view.getId() == R.id.right) {
-
-            Float a = event.getY() / screenHeight;
-
-            Log.d("touch-right", a.toString());
+        if (view.getId() == R.id.left || view.getId() == R.id.right) {
+            float rate = event.getY() / screenHeight * 255;
+            Integer a = (int)rate;
+            SocketThread.send(a.toString());
         }
 
         //SocketThread.send(String.valueOf(event.getX()) + "-" +String.valueOf(event.getY()));
