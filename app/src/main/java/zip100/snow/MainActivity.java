@@ -34,9 +34,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     Integer screenHeight, screenWidth;
 
-    private final String imgUrl = "http://codelife.jios.org:807/?action=stream";
-    private final String ipAddress = "192.168.199.137";
-    private final Integer port = 81;
+    private final String imgUrl = "http://192.168.199.121:8080/?action=stream";
+    private final String ipAddress = "192.168.199.121";
+    private final Integer port = 1500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,21 +71,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Integer a = (int) rate;
 
             if ((view.getId() == R.id.left && (a - left > offset || a - left < -offset))) {
-                left = a;
-                SocketThread.send(a, 0, 0, 0, EVENT_LEFT_SPEED);
+
+
+                Integer dd = (int) ((10 * event.getY() / 1080) + 10);
+                SocketThread.send(dd, 0, 0, 0, EVENT_LEFT_SPEED);
             }
 
             if (view.getId() == R.id.right && (a - right > offset || a - right < -offset)) {
-                right = a;
-                SocketThread.send(0, a, 0, 0, EVENT_RIGHR_SPEED);
+                //right = a;
+                //SocketThread.send(0, 356 - a, 0, 0, EVENT_RIGHR_SPEED);
+                Integer dd = (int) ((10 * event.getY() / 1080) + 10);
+                SocketThread.send(0, dd, 0, 0, EVENT_LEFT_SPEED);
             }
 
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 if (view.getId() == R.id.left) {
-                    SocketThread.send(128, 0, 0, 0, EVENT_LEFT_SPEED_END);
+                    SocketThread.send(15, 0, 0, 0, EVENT_LEFT_SPEED_END);
                 }
                 if (view.getId() == R.id.right) {
-                    SocketThread.send(0, 128, 0, 0, EVENT_RIGHR_SPEED_END);
+                    SocketThread.send(0, 15, 0, 0, EVENT_RIGHR_SPEED_END);
                 }
             }
 
